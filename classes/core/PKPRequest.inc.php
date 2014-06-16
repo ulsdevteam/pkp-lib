@@ -162,7 +162,7 @@ class PKPRequest {
 		$_this =& PKPRequest::_checkThis();
 
 		if (!isset($_this->_basePath)) {
-			$path = preg_replace('#/[^/]*$#', '', $_SERVER['SCRIPT_NAME'].(preg_match('#/(index.php)?$#', $_SERVER['SCRIPT_NAME']) ? '' : '/'));
+			$path = preg_replace('#/[^/]*$#', '', $_SERVER['SCRIPT_NAME'].(preg_match('#/([^/]+.php)?$#', $_SERVER['SCRIPT_NAME']) ? '' : '/'));
 
 			// Encode charcters which need to be encoded in a URL.
 			// Simply using rawurlencode() doesn't work because it
