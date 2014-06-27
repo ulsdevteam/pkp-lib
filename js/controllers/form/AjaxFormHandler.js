@@ -21,10 +21,11 @@
 	 *
 	 * @extends $.pkp.controllers.form.FormHandler
 	 *
-	 * @param {jQuery} $form the wrapped HTML form element.
+	 * @param {jQueryObject} $form the wrapped HTML form element.
 	 * @param {Object} options options to configure the AJAX form handler.
 	 */
 	$.pkp.controllers.form.AjaxFormHandler = function($form, options) {
+		this.disableControlsOnSubmit = true;
 		options.submitHandler = this.submitForm;
 		this.parent($form, options);
 
@@ -34,16 +35,6 @@
 	$.pkp.classes.Helper.inherits(
 			$.pkp.controllers.form.AjaxFormHandler,
 			$.pkp.controllers.form.FormHandler);
-
-
-	/**
-	 * Overridden default from FormHandler -- disable form controls
-	 * on AJAX forms by default.
-	 * @private
-	 * @type {Boolean}
-	 */
-	$.pkp.controllers.form.AjaxFormHandler.prototype.
-			disableControlsOnSubmit_ = true;
 
 
 	//
@@ -75,9 +66,9 @@
 	 *
 	 * @private
 	 *
-	 * @param {$jQuery} sourceElement The containing element.
+	 * @param {jQueryObject} sourceElement The containing element.
 	 * @param {Event} event The calling event.
-	 * @param {String} content The content to replace with.
+	 * @param {string} content The content to replace with.
 	 */
 	$.pkp.controllers.form.AjaxFormHandler.prototype.refreshFormHandler_ =
 			function(sourceElement, event, content) {
@@ -106,11 +97,12 @@
 	$.pkp.controllers.form.AjaxFormHandler.prototype.handleResponse =
 			function(formElement, jsonData) {
 
-		jsonData = this.handleJson(jsonData);
-		if (jsonData !== false) {
-			if (jsonData.content === '') {
+		var $form, formSubmittedEvent, processedJsonData;
+		processedJsonData = this.handleJson(jsonData);
+		if (processedJsonData !== false) {
+			if (processedJsonData.content === '') {
 				// Notify any nested formWidgets of form submitted event.
-				var formSubmittedEvent = new $.Event('formSubmitted');
+				formSubmittedEvent = new $.Event('formSubmitted');
 				$(this.getHtmlElement()).find('.formWidget').trigger(formSubmittedEvent);
 
 				// Trigger the "form submitted" event.
@@ -119,27 +111,29 @@
 				// Fire off any other optional events.
 				this.publishChangeEvents();
 			} else {
-				if (jsonData.reloadContainer !== undefined) {
+				if (/** @type {{reloadContainer: Object}} */ (
+						processedJsonData).reloadContainer !== undefined) {
 					this.trigger('dataChanged');
-					this.trigger('containerReloadRequested', jsonData);
-					return jsonData.status;
+					this.trigger('containerReloadRequested', [processedJsonData]);
+					return processedJsonData.status;
 				}
 
 				// Redisplay the form.
-				var $form = this.getHtmlElement();
-				$form.replaceWith(jsonData.content);
+				$form = this.getHtmlElement();
+				$form.replaceWith(processedJsonData.content);
 			}
 		}
 
 		$(this.getHtmlElement()).find('.pkp_helpers_progressIndicator').hide();
-		this.getHtmlElement().find(':submit').button('enable');
+		this.getHtmlElement().find(':submit').button();
 
 		// Trigger the notify user event, passing this
 		// html element as data.
-		this.trigger('notifyUser', this.getHtmlElement());
+		this.trigger('notifyUser', [this.getHtmlElement()]);
 
-		return jsonData.status;
+		return processedJsonData.status;
 	};
 
+
 /** @param {jQuery} $ jQuery closure. */
-})(jQuery);
+}(jQuery));
