@@ -29,7 +29,7 @@ class WebTestCase extends PHPUnit_Extensions_SeleniumTestCase {
 	/**
 	 * Override this method if you want to backup/restore
 	 * tables before/after the test.
-	 * @return array A list of tables to backup and restore.
+	 * @return array|PKP_TEST_ENTIRE_DB A list of tables to backup and restore.
 	 */
 	protected function getAffectedTables() {
 		return array();
@@ -49,7 +49,7 @@ class WebTestCase extends PHPUnit_Extensions_SeleniumTestCase {
 	/**
 	 * @copydoc PHPUnit_Framework_TestCase::setUp()
 	 */
-	function setUp() {
+	protected function setUp() {
 		$screenshotsFolder = 'lib/pkp/tests/results';
 		$this->screenshotPath = BASE_SYS_DIR . DIRECTORY_SEPARATOR . $screenshotsFolder;
 		$this->screenshotUrl = Config::getVar('general', 'base_url') . '/' . $screenshotsFolder;
@@ -74,8 +74,11 @@ class WebTestCase extends PHPUnit_Extensions_SeleniumTestCase {
 		$this->setBrowser('*chrome');
 
 		$this->setBrowserUrl(self::$baseUrl . '/');
-		if (Config::getVar('general', 'installed') && !defined('SESSION_DISABLE_INIT')) {
-			PKPTestHelper::backupTables($this->getAffectedTables(), $this);
+		if (Config::getVar('general', 'installed')) {
+			$affectedTables = $this->getAffectedTables();
+			if (is_array($affectedTables)) {
+				PKPTestHelper::backupTables($affectedTables, $this);
+			}
 		}
 
 		$cacheManager = CacheManager::getManager();
@@ -83,7 +86,7 @@ class WebTestCase extends PHPUnit_Extensions_SeleniumTestCase {
 		$cacheManager->flush(null, CACHE_TYPE_OBJECT);
 
 		// Clear ADODB's cache
-		if (Config::getVar('general', 'installed') && !defined('SESSION_DISABLE_INIT')) {
+		if (Config::getVar('general', 'installed')) {
 			$userDao = DAORegistry::getDAO('UserDAO'); // As good as any
 			$userDao->flushCache();
 		}
@@ -96,8 +99,13 @@ class WebTestCase extends PHPUnit_Extensions_SeleniumTestCase {
 	 */
 	protected function tearDown() {
 		parent::tearDown();
-		if (Config::getVar('general', 'installed') && !defined('SESSION_DISABLE_INIT')) {
-			PKPTestHelper::restoreTables($this->getAffectedTables(), $this);
+		if (Config::getVar('general', 'installed')) {
+			$affectedTables = $this->getAffectedTables();
+			if (is_array($affectedTables)) {
+				PKPTestHelper::restoreTables($this->getAffectedTables(), $this);
+			} elseif ($affectedTables === PKP_TEST_ENTIRE_DB) {
+				PKPTestHelper::restoreDB($this);
+			}
 		}
 	}
 
