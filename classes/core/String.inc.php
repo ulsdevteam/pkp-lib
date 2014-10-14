@@ -408,6 +408,9 @@ class String {
 		// SUGGESTED_EXTENSION:DETECTED_MIME_TYPE => OVERRIDE_MIME_TYPE
 		$ambiguities = array(
 			'css:text/x-c' => 'text/css',
+			'css:text/x-c++' => 'text/css',
+			'css:text/x-asm' => 'text/css',
+			'css:text/troff' => 'text/css',
 			'css:text/plain' => 'text/css',
 			'xlsx:application/zip' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			'xltx:application/zip' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
