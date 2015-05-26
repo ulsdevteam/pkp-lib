@@ -501,6 +501,7 @@ class Mail extends DataObject {
 
 		} else {
 			$this->addHeader('Content-Type', 'text/plain; charset="'.Config::getVar('i18n', 'client_charset').'"');
+			$this->addHeader('Content-Transfer-Encoding', 'quoted-printable');
 		}
 
 		$this->addHeader('X-Mailer', 'Public Knowledge Project Suite v2');
@@ -541,8 +542,8 @@ class Mail extends DataObject {
 			// Add the body
 			$mailBody = 'This message is in MIME format and requires a MIME-capable mail client to view.'.MAIL_EOL.MAIL_EOL;
 			$mailBody .= '--'.$mimeBoundary.MAIL_EOL;
-			$mailBody .= sprintf('Content-Type: text/plain; charset=%s', Config::getVar('i18n', 'client_charset')) . MAIL_EOL.MAIL_EOL;
-			$mailBody .= wordwrap($body, MAIL_WRAP, MAIL_EOL).MAIL_EOL.MAIL_EOL;
+			$mailBody .= sprintf('Content-Type: text/plain; charset=%s', Config::getVar('i18n', 'client_charset')) . MAIL_EOL . 'Content-Transfer-Encoding: quoted-printable' . MAIL_EOL.MAIL_EOL;
+			$mailBody .= quoted_printable_encode($body).MAIL_EOL.MAIL_EOL;
 
 			// Add the attachments
 			$attachments = $this->getAttachments();
@@ -558,7 +559,7 @@ class Mail extends DataObject {
 
 		} else {
 			// Just add the body
-			$mailBody = wordwrap($body, MAIL_WRAP, MAIL_EOL);
+			$mailBody = quoted_printable_encode($body);
 		}
 
 		if ($this->getEnvelopeSender() != null) {
