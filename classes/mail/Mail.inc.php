@@ -538,12 +538,19 @@ class Mail extends DataObject {
 			$headers .= $header['name'].': '. str_replace(array("\r", "\n"), '', $header['content']);
 		}
 
+		// Replace all the private parameters for this message.
+		if (is_array($this->privateParams)) {
+			foreach ($this->privateParams as $name => $value) {
+				$mailBody = str_replace($name, $value, $body);
+			}
+		}
+
 		if ($this->hasAttachments()) {
 			// Add the body
 			$mailBody = 'This message is in MIME format and requires a MIME-capable mail client to view.'.MAIL_EOL.MAIL_EOL;
 			$mailBody .= '--'.$mimeBoundary.MAIL_EOL;
 			$mailBody .= sprintf('Content-Type: text/plain; charset=%s', Config::getVar('i18n', 'client_charset')) . MAIL_EOL . 'Content-Transfer-Encoding: quoted-printable' . MAIL_EOL.MAIL_EOL;
-			$mailBody .= quoted_printable_encode($body).MAIL_EOL.MAIL_EOL;
+			$mailBody .= str_replace("\r\n", MAIL_EOL, quoted_printable_encode($body)).MAIL_EOL.MAIL_EOL;
 
 			// Add the attachments
 			$attachments = $this->getAttachments();
@@ -559,7 +566,7 @@ class Mail extends DataObject {
 
 		} else {
 			// Just add the body
-			$mailBody = quoted_printable_encode($body);
+			$mailBody = str_replace("\r\n", MAIL_EOL, quoted_printable_encode($body));
 		}
 
 		if ($this->getEnvelopeSender() != null) {
@@ -569,13 +576,6 @@ class Mail extends DataObject {
 		}
 
 		if (HookRegistry::call('Mail::send', array(&$this, &$recipients, &$subject, &$mailBody, &$headers, &$additionalParameters))) return;
-
-		// Replace all the private parameters for this message.
-		if (is_array($this->privateParams)) {
-			foreach ($this->privateParams as $name => $value) {
-				$mailBody = str_replace($name, $value, $mailBody);
-			}
-		}
 
 		if (Config::getVar('email', 'smtp')) {
 			$smtp =& Registry::get('smtpMailer', true, null);
