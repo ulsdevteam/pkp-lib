@@ -46,6 +46,16 @@
 
 // Define the well-known file name for filter configuration data.
 define('PLUGIN_FILTER_DATAFILE', 'filterConfig.xml');
+// Define a setting value for plugins which operate only at the Context level
+define('PLUGIN_SCOPE_CONTEXT_ONLY', false);
+// Define a setting value for plugins which operate only at the Site level
+define('PLUGIN_SCOPE_SITE_ONLY', true);
+// Define a setting value for plugins which operate at the Site level, but can also be customized at a specific Context level
+define('PLUGIN_SCOPE_ANY', 1);
+// Define the well-known setting name which indicates if a PLUGIN_SCOPE_ANY plugin uses settings from the site
+// If this value is true at the site level, site settings must be inherited
+// If this value is true at the context level, the context will try to use site settings
+define('PLUGIN_SETTINGS_USE_SITE', 'enable_site_config');
 
 abstract class Plugin {
 	/** @var string Path name to files for this plugin */
@@ -157,12 +167,12 @@ abstract class Plugin {
 	}
 
 	/**
-	 * Site-wide plugins should override this function to return true.
+	 * Site-wide plugins should override this function to return PLUGIN_SCOPE_SITE_ONLY or PLUGIN_SCOPE_ANY.
 	 *
-	 * @return boolean
+	 * @return boolean|integer false if context only, true if site only, 1 if site or context
 	 */
 	function isSitePlugin() {
-		return false;
+		return PLUGIN_SCOPE_CONTEXT_ONLY;
 	}
 
 	/**
@@ -176,6 +186,50 @@ abstract class Plugin {
 	}
 
 	/**
+	 * Identifies whether this plugin can use site settings within the current context.
+	 *
+	 * @return boolean
+	 */
+	function getCanInheritSite() {
+		// check if this is a plugin which supports site and context-specific settings
+		if ($this->isSitePlugin() === PLUGIN_SCOPE_ANY) {
+			$application = PKPApplication::getApplication();
+			$contextDepth = $application->getContextDepth();
+			if ($contextDepth) {
+				// within a specific context, return whether this has been restricted at the site level
+				return (boolean)$this->getSetting(CONTEXT_SITE, PLUGIN_SETTINGS_USE_SITE);
+			} else {
+				// within the site context, allow enabling/disabling inheritance
+				return true;
+			}
+		}
+		// Site-only plugins and context-only plugins do not support inheritance
+		return false;
+	}
+
+	/**
+	 * Identifies whether this plugin uses site settings within the current context.
+	 *
+	 * @return boolean
+	 */
+	function getDoesInheritSite() {
+		// check if this is a plugin which supports site and context-specific settings
+		if ($this->isSitePlugin() === PLUGIN_SCOPE_ANY) {
+			$application = PKPApplication::getApplication();
+			$contextDepth = $application->getContextDepth();
+			if ($contextDepth && $this->getSetting(CONTEXT_SITE, PLUGIN_SETTINGS_USE_SITE)) {
+				// setting are forced to site
+				return true;
+			} else {
+				// within the site context, check if site settings are requested
+				return (boolean)$this->getSetting($this->getCurrentContextId(), PLUGIN_SETTINGS_USE_SITE);
+			}
+		}
+		// Site-only plugins and context-only plugins do not support inheritance
+		return false;
+	}
+
+/**
 	 * Determine whether or not this plugin should be hidden from the
 	 * management interface. Useful in the case of derivative plugins,
 	 * i.e. when a generic plugin registers a feed plugin.
@@ -752,6 +806,15 @@ abstract class Plugin {
 	function getJavascriptNameSpace() {
 		return '$.pkp.plugins.' . strtolower(get_class($this));
 	}
-}
 
+	/**
+	 * Get the current context ID or the site-wide context ID (0) if no context
+	 * can be found.
+	 */
+	function getCurrentContextId() {
+		$context = PKPApplication::getRequest()->getContext();
+		return is_null($context) ? 0 : $context->getId();
+	}
+
+	}
 ?>

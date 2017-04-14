@@ -86,14 +86,6 @@ abstract class LazyLoadPlugin extends Plugin {
 		return true;
 	}
 
-	/**
-	 * Get the current context ID or the site-wide context ID (0) if no context
-	 * can be found.
-	 */
-	function getCurrentContextId() {
-		$context = PKPApplication::getRequest()->getContext();
-		return is_null($context) ? 0 : $context->getId();
-	}
 }
 
 ?>
