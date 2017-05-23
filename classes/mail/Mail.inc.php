@@ -541,7 +541,7 @@ class Mail extends DataObject {
 		// Replace all the private parameters for this message.
 		if (is_array($this->privateParams)) {
 			foreach ($this->privateParams as $name => $value) {
-				$mailBody = str_replace($name, $value, $body);
+				$body = str_replace($name, $value, $body);
 			}
 		}
 
