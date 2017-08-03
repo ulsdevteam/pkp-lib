@@ -18,6 +18,11 @@
  * @brief Basic class describing users existing in the system.
  */
 
+define('USER_DISABLED_NONE', 0);
+define('USER_DISABLED_MANUAL', 1);
+define('USER_DISABLED_EMAIL_VALIDATION', 2);
+define('USER_DISABLED_MEDIATION', 4);
+
 class PKPUser extends DataObject {
 	/**
 	 * Constructor
@@ -551,7 +556,7 @@ class PKPUser extends DataObject {
 
 	/**
 	 * Check if user is disabled.
-	 * @return boolean
+	 * @return int bitmask of USER_DISABLED_* constants (boolean true means disabled)
 	 */
 	function getDisabled() {
 		return $this->getData('disabled');
@@ -559,7 +564,7 @@ class PKPUser extends DataObject {
 
 	/**
 	 * Set whether or not user is disabled.
-	 * @param $disabled boolean
+	 * @param $disabled int bitmask of USER_DISABLED_* constants
 	 */
 	function setDisabled($disabled) {
 		return $this->setData('disabled', $disabled);

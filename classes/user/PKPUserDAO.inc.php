@@ -240,7 +240,7 @@ class PKPUserDAO extends DAO {
 				$user->getCountry(),
 				join(':', $user->getLocales()),
 				$user->getMustChangePassword() ? 1 : 0,
-				$user->getDisabled() ? 1 : 0,
+				$user->getDisabled(),
 				$user->getDisabledReason(),
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),
@@ -323,7 +323,7 @@ class PKPUserDAO extends DAO {
 				$user->getCountry(),
 				join(':', $user->getLocales()),
 				$user->getMustChangePassword() ? 1 : 0,
-				$user->getDisabled() ? 1 : 0,
+				$user->getDisabled(),
 				$user->getDisabledReason(),
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),
@@ -480,6 +480,22 @@ class PKPUserDAO extends DAO {
 		$orderSql = ' ORDER BY u.last_name, u.first_name'; // FIXME Add "sort field" parameter?
 
 		$result =& $this->retrieveRange($sql . ($allowDisabled?'':' AND u.disabled = 0') . $orderSql, false, $dbResultRange);
+
+		$returner = new DAOResultFactory($result, $this, '_returnUserFromRowWithData');
+		return $returner;
+	}
+
+	/**
+	 * Retrieve an array of users pending mediation for account activation
+	 * @param $dbResultRange object The desired range of results to return
+	 * @return array matching Users
+	 */
+	function &getUsersPendingMediation($dbResultRange = null) {
+		$sql = 'SELECT u.* FROM users u WHERE u.disabled = ?';
+
+		$orderSql = ' ORDER BY u.last_name, u.first_name'; // FIXME Add "sort field" parameter?
+
+		$result =& $this->retrieveRange($sql . $orderSql, USER_DISABLED_MEDIATION, $dbResultRange);
 
 		$returner = new DAOResultFactory($result, $this, '_returnUserFromRowWithData');
 		return $returner;
