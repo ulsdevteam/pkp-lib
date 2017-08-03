@@ -417,7 +417,7 @@ class PKPUserDAO extends DAO {
 				$user->getCountry(),
 				join(':', $user->getLocales()),
 				$user->getMustChangePassword() ? 1 : 0,
-				$user->getDisabled() ? 1 : 0,
+				$user->getDisabled(),
 				$user->getDisabledReason(),
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),

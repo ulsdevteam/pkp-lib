@@ -20,6 +20,11 @@
 
 import('lib.pkp.classes.identity.Identity');
 
+define('USER_DISABLED_NONE', 0);
+define('USER_DISABLED_MANUAL', 1);
+define('USER_DISABLED_EMAIL_VALIDATION', 2);
+define('USER_DISABLED_MEDIATION', 4);
+
 class PKPUser extends Identity {
 
 	//
@@ -308,7 +313,7 @@ class PKPUser extends Identity {
 
 	/**
 	 * Check if user is disabled.
-	 * @return boolean
+	 * @return int (boolean true means disabled)
 	 */
 	function getDisabled() {
 		return $this->getData('disabled');
@@ -316,7 +321,7 @@ class PKPUser extends Identity {
 
 	/**
 	 * Set whether or not user is disabled.
-	 * @param $disabled boolean
+	 * @param $disabled int
 	 */
 	function setDisabled($disabled) {
 		$this->setData('disabled', $disabled);
