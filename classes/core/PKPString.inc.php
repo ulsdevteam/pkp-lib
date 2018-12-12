@@ -393,6 +393,17 @@ class PKPString {
 	}
 
 	/**
+	 * Convert newlines to li elements
+	 * parallel to PHP's nl2br, but for <li> elements
+	 * @param $input string input string
+	 * @return string
+	 */
+	static function nl2li($input) {
+		$elements = array_filter(explode("\n", str_replace(array("\r\n", "\r", "\n"), "\n", $input)));
+		return count($elements) ? '<li>'.implode("</li>\n<li>", $elements).'</li>' : '';
+	}
+
+	/**
 	 * Convert limited HTML into a string.
 	 * @param $html string
 	 * @return string
