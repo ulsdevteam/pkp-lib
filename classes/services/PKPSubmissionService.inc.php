@@ -801,6 +801,9 @@ abstract class PKPSubmissionService extends PKPBaseEntityPropertyService {
 								break;
 							}
 						}
+					} else {
+						// Temporary workaround for pkp/pkp-lib#4231
+						$stage['files'] = array( 'count' => 0 );
 					}
 					break;
 
