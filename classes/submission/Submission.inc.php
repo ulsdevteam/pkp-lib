@@ -224,10 +224,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get stored copyright holder for the submission.
-	 * @param $locale string locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized copyright holder, or array of copyright holders by locale key
 	 */
-	function getCopyrightHolder($locale) {
+	function getCopyrightHolder($locale = null) {
 		return $this->getData('copyrightHolder', $locale);
 	}
 
@@ -416,11 +416,11 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get title.
-	 * @param $locale
+	 * @param $locale string|null Optional locale
 	 * @param $includePrefix bool
-	 * @return string
+	 * @return string|array Localized title, or array of titles by locale key
 	 */
-	function getTitle($locale, $includePrefix = true) {
+	function getTitle($locale = null, $includePrefix = true) {
 		$title = $this->getData('title', $locale);
 		if ($includePrefix) {
 			if (is_array($title)) {
@@ -469,10 +469,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get the subtitle for a given locale
-	 * @param $locale string
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized subtitle, or array of subtitles by locale key
 	 */
-	function getSubtitle($locale) {
+	function getSubtitle($locale = null) {
 		return $this->getData('subtitle', $locale);
 	}
 
@@ -503,10 +503,10 @@ abstract class Submission extends DataObject {
 	/**
 	 * Get the submission full title (with prefix, title
 	 * and subtitle).
-	 * @param $locale string Locale to fetch data in.
-	 * @return string
+	 * @param $locale string|null Optional locale to fetch data in.
+	 * @return string|array Localized full title, or array of full titles by locale key
 	 */
-	function getFullTitle($locale) {
+	function getFullTitle($locale = null) {
 		$fullTitle = $this->getTitle($locale);
 
 		if (is_array($fullTitle)) {
@@ -534,10 +534,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get prefix.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized prefix, or array of prefixes by locale key
 	 */
-	function getPrefix($locale) {
+	function getPrefix($locale = null) {
 		return $this->getData('prefix', $locale);
 	}
 
@@ -560,10 +560,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get abstract.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized abstract, or array of abstracts by locale key
 	 */
-	function getAbstract($locale) {
+	function getAbstract($locale = null) {
 		return $this->getData('abstract', $locale);
 	}
 
@@ -586,10 +586,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get discipline
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized discipline, or array of disciplines by locale key
 	 */
-	function getDiscipline($locale) {
+	function getDiscipline($locale = null) {
 		return $this->getData('discipline', $locale);
 	}
 
@@ -612,10 +612,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get subject.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized subject, or array of subjects by locale key
 	 */
-	function getSubject($locale) {
+	function getSubject($locale = null) {
 		return $this->getData('subject', $locale);
 	}
 
@@ -638,10 +638,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get coverage.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized coverage, or array of coverage by locale key
 	 */
-	function getCoverage($locale) {
+	function getCoverage($locale = null) {
 		return $this->getData('coverage', $locale);
 	}
 
@@ -664,10 +664,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get type (method/approach).
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null
+	 * @return string|array Localized type, or array of types by locale key
 	 */
-	function getType($locale) {
+	function getType($locale = null) {
 		return $this->getData('type', $locale);
 	}
 
@@ -682,10 +682,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get rights.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized rights, or array of rights by locale key
 	 */
-	function getRights($locale) {
+	function getRights($locale = null) {
 		return $this->getData('rights', $locale);
 	}
 
@@ -700,10 +700,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get source.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null
+	 * @return string|array Localized source, or array of sources by locale key
 	 */
-	function getSource($locale) {
+	function getSource($locale = null) {
 		return $this->getData('source', $locale);
 	}
 
@@ -742,10 +742,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get sponsor.
-	 * @param $locale
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized sponsor, or array of sponsors by locale key
 	 */
-	function getSponsor($locale) {
+	function getSponsor($locale = null) {
 		return $this->getData('sponsor', $locale);
 	}
 
@@ -760,10 +760,10 @@ abstract class Submission extends DataObject {
 
 	/**
 	 * Get the copyright notice for a given locale
-	 * @param $locale string
-	 * @return string
+	 * @param $locale string|null Optional locale
+	 * @return string|array Localized copyright notice, or array of copyright notices by locale key
 	 */
-	function getCopyrightNotice($locale) {
+	function getCopyrightNotice($locale = null) {
 		return $this->getData('copyrightNotice', $locale);
 	}
 
